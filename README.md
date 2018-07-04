@@ -4,7 +4,7 @@ Programa para hacer ataque de fuerza bruta a servidores de correo (SMTP y IMAP)
 
 ### instrucciones de uso
 
-- 1 tener un archivo csv o txt con el siguiente formato.
+- tener un archivo csv o txt con el siguiente formato.
 
 debe ser el correo con la contraseña separada de una coma
  
@@ -14,7 +14,7 @@ debe ser el correo con la contraseña separada de una coma
  correo3@yahoo.com,contraseña3
  ```
  
- - 2 para correrlo se debe iniciar el archivo 
+ - para correrlo se debe iniciar el archivo 
  
  `$ python fuerzaBrutaEmail.py [nombre_del_archivo.csv|txt]`
  
