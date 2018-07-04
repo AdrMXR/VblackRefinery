@@ -1,5 +1,5 @@
 # FuerzaBrutaEmail 0.2
-Programa para hacer ataque de fuerza bruta a servidores SMTP
+Programa para hacer ataque de fuerza bruta a servidores de correo (SMTP y IMAP)
 - programado por Valdr Stiglitz @ValdrST
 
 ### instrucciones de uso
