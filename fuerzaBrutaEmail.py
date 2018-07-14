@@ -79,7 +79,7 @@ if __name__ == "__main__":
 	else:
 		open(save,"w")
 	fil = open(inputTXT,"r")
-	datos = open(outputTXT,"w")
+	datos = open(outputTXT,"a")
 	lineas=fil.read().split('\n')
 	fichero = open(inputTXT, 'r')
 	numLineas = len(fichero.readlines())
