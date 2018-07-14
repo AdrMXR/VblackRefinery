@@ -87,12 +87,21 @@ if __name__ == "__main__":
 	num = [0]
 	for linea in lineas:
 		try:
-			if flag:
+			if flag and linea != "":
 				lineaRaw = linea
 				linea=linea.split(',')
 				email=linea[0]
-				contra=linea[1]
-				checklogin(email,contra,datos,num)
+				contras=linea[1:]
+				if len(contras) > 1:
+					if linea[1] not in linea[2:]:
+						for contra in contras:
+							checklogin(email,contra,datos,num)
+					else:
+						contra = linea[1]
+						checklogin(email,contra,datos,num)
+				else:
+					contra = linea[1]
+					checklogin(email,contra,datos,num)
 				sav = open(save, "w")
 				sav.write(lineaRaw)
 				sav.close()
