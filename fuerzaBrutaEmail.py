@@ -103,6 +103,7 @@ if __name__ == "__main__":
         outputTXT = sys.argv[sys.argv.index("-O") + 1]+".txt"
     if "-I" in sys.argv:
         inputTXT = sys.argv[sys.argv.index("-I") + 1]
+        eliminarRepetidos(inputTXT)
     flag = True
     lineaSav = None
     if os.path.isfile(save):
@@ -152,5 +153,4 @@ if __name__ == "__main__":
         finally:
             lineasActuales += 1
             print("%{0}".format(float((100/numLineas)*lineasActuales)))
-    eliminarRepetidos(inputTXT)
     eliminarRepetidos(outputTXT)
