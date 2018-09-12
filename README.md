@@ -1,5 +1,5 @@
-# FuerzaBrutaEmail 0.6
-Programa para hacer ataque de fuerza bruta a servidores de correo (SMTP y IMAP)
+# VblackRefinery 0.6
+Programa para hacer ataque de fuerza bruta y refinacion de datos a servidores de correo (SMTP y IMAP) y apis de redes sociales
 - programado por Valdr Stiglitz @ValdrST
 
 ### instrucciones de uso
