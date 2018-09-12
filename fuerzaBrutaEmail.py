@@ -103,7 +103,7 @@ if __name__ == "__main__":
         outputTXT = sys.argv[sys.argv.index("-O") + 1]+".txt"
     if "-I" in sys.argv:
         inputTXT = sys.argv[sys.argv.index("-I") + 1]
-        eliminarRepetidos(inputTXT)
+        #eliminarRepetidos(inputTXT)
     flag = True
     lineaSav = None
     if os.path.isfile(save):
@@ -124,34 +124,36 @@ if __name__ == "__main__":
     lineasActuales = 0
     num = [0]
     for linea in lineas:
-        if salida == False:
+        
             try:
-                if flag and linea != "":
-                    lineaRaw = linea
-                    linea = linea.split(',')
-                    email = linea[0]
-                    contras = linea[1:]
-                    if len(contras) > 1:
-                        if linea[1] not in linea[2:]:
-                            for contra in contras:
+                if salida == False:
+                    if flag and linea != "":
+                        lineaRaw = linea
+                        linea = linea.split(',')
+                        email = linea[0]
+                        contras = linea[1:]
+                        if len(contras) > 1:
+                            if linea[1] not in linea[2:]:
+                                for contra in contras:
+                                    checklogin(email, contra, datos, num)
+                            else:
+                                contra = linea[1]
                                 checklogin(email, contra, datos, num)
                         else:
                             contra = linea[1]
                             checklogin(email, contra, datos, num)
-                    else:
-                        contra = linea[1]
-                        checklogin(email, contra, datos, num)
-                    sav = open(save, "w")
-                    sav.write(lineaRaw)
-                    sav.close()
+                        sav = open(save, "w")
+                        sav.write(lineaRaw)
+                        sav.close()
+                else:
+                    break
                 if linea == lineaSav and linea != "":
-                   flag = True
+                    flag = True
             except Exception as e:
                 print("Excepcion Dura "+str(e))
             finally:
                 lineasActuales += 1
                 print("%{0}".format(float((100/numLineas)*lineasActuales)))
-        if salida == False:
-            break
-            
+        
+
     eliminarRepetidos(outputTXT)
