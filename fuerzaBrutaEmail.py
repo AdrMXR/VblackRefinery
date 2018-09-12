@@ -124,8 +124,8 @@ if __name__ == "__main__":
     lineasActuales = 0
     num = [0]
     for linea in lineas:
-        try:
-            if salida == False:
+        if salida == False:
+            try:
                 if flag and linea != "":
                     lineaRaw = linea
                     linea = linea.split(',')
@@ -145,12 +145,13 @@ if __name__ == "__main__":
                     sav.write(lineaRaw)
                     sav.close()
                 if linea == lineaSav and linea != "":
-                    flag = True
-            else:
-                break
-        except Exception as e:
-            print("Excepcion Dura "+str(e))
-        finally:
-            lineasActuales += 1
-            print("%{0}".format(float((100/numLineas)*lineasActuales)))
+                   flag = True
+            except Exception as e:
+                print("Excepcion Dura "+str(e))
+            finally:
+                lineasActuales += 1
+                print("%{0}".format(float((100/numLineas)*lineasActuales)))
+        if salida == False:
+            break
+            
     eliminarRepetidos(outputTXT)
