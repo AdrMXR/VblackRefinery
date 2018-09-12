@@ -1,4 +1,4 @@
-# FuerzaBrutaEmail 0.4
+# FuerzaBrutaEmail 0.6
 Programa para hacer ataque de fuerza bruta a servidores de correo (SMTP y IMAP)
 - programado por Valdr Stiglitz @ValdrST
 
@@ -18,7 +18,8 @@ debe ser el correo con la contraseña separada de una coma puede ser una o varia
  
  - para correrlo se debe iniciar el archivo 
  
- `$ python fuerzaBrutaEmail.py [nombre_del_archivo.csv|txt] [nombre_de_archivo_salida]`
+ `$ python fuerzaBrutaEmail.py -I [nombre_del_archivo.csv|txt] -O [nombre_de_archivo_salida] --email|--icloud` 
+ - Existen las banderas --email que sirve solo para probar con smtp, si usas --icloud tambien probara suerte con los servidores de icloud
  
 Va a dar como salida un archivo llamado claves.txt con los correos y contaseñas validas por los servidores de correo
 
