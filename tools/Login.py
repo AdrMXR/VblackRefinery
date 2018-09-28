@@ -2,9 +2,9 @@ import smtplib
 import imaplib
 from pyicloud import PyiCloudService
 class Login:
-    def __init__(self):
-        self.email = "valdr.stiglitz@gmail.com"
-        self.password = "012345678"
+    def __init__(self,email="valdr.stiglitz@gmail.com",contra="012345678"):
+        self.email = email
+        self.password = contra
         self.icloud = False
         self.logMail = False
         self.servidores = {"gmail":["@gmail.com"],"yahoo":["@yahoo.com","@yahoo.com.mx"],"outlook":["@hotmail.com","@outlook.com","@hotmail"]}
@@ -47,9 +47,19 @@ class Login:
         except:
             self.logMail = False
 
+    def checkLoginEmail(self):
+        self.definirServidorMail()
+        if self.servidor == "gmail":
+            self.checkLoginGmail()
+        elif self.servidor == "yahoo":
+            self.checkLoginYahoo()
+        else:
+            self.checkLoginMS()
+        return self.logMail
+
     def checkLoginiCloud(self):
         try:
-            icloud = PyiCloudService(email,contra)
+            PyiCloudService(self.email,self.password)
             self.icloud = True
         except:
             self.icloud = False

