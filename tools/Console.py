@@ -1,6 +1,7 @@
 import sys
 import argparse
 from tools.refinery import refinery
+from tools.gui import GUI
 import threading
 class Console:
     def __init__(self):
@@ -10,28 +11,33 @@ class Console:
         self.parser.add_argument("--email",action="store_true", help="introduce si se va a revisar email")
         self.parser.add_argument("--icloud",action="store_true",help="introduce si se va a revisar icloud")
         self.parser.add_argument("--out-text-email",action="store_true",help="Crea salida de contraseñas validas email en .txt")
+        self.parser.add_argument("--gui",action="store_true",help="Abre el programa en modo GUI")
         self.args = parser.parse_args()
     
     def evaluar_argumentos(self):
-        refineria = refinery(database_file = self.args.out)
-        if self.args.source != None:
-            refineria.pumper.archivo_entrada = self.args.source
-            refineria.pumper.extraer_datos()
-            if self.args.out_text_email == True:
-                refineria.recuperar_email_validos()
-        if self.args.email == True and self.args.icloud == True:
-            hilo_email = threading.Thread(target=refineria.checar_emails_login)
-            hilo_icloud = threading.Thread(target=refineria.checar_icloud_login)
-            hilo_email.start()
-            hilo_icloud.start()
-            hilo_email.join()
-            hilo_icloud.join()
-        elif self.args.email == True:
-            refineria.checar_emails_login()
-            if self.args.out_text_email == True:
-                refineria.recuperar_email_validos()
-        elif self.args.icloud == True:
-            refineria.checar_icloud_login()
+        if self.args.gui == False:
+            refineria = refinery(database_file = self.args.out)
+            if self.args.source != None:
+                refineria.pumper.archivo_entrada = self.args.source
+                refineria.pumper.extraer_datos()
+                if self.args.out_text_email == True:
+                    refineria.recuperar_email_validos()
+            if self.args.email == True and self.args.icloud == True:
+                hilo_email = threading.Thread(target=refineria.checar_emails_login)
+                hilo_icloud = threading.Thread(target=refineria.checar_icloud_login)
+                hilo_email.start()
+                hilo_icloud.start()
+                hilo_email.join()
+                hilo_icloud.join()
+            elif self.args.email == True:
+                refineria.checar_emails_login()
+                if self.args.out_text_email == True:
+                    refineria.recuperar_email_validos()
+            elif self.args.icloud == True:
+                refineria.checar_icloud_login()
+        else:
+            vBlackRefinery = GUI(0)
+            vBlackRefinery.MainLoop()
         
 
         
