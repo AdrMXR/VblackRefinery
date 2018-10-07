@@ -1,10 +1,31 @@
-# VblackRefinery 0.6
+# VblackRefinery 1.3
 Programa para hacer ataque de fuerza bruta y refinacion de datos a servidores de correo (SMTP y IMAP) y apis de redes sociales
 - programado por Valdr Stiglitz @ValdrST
 
-### instrucciones de uso
+### Para correrlo en modo GUI interfaz grafica
 
-- tener un archivo csv o txt con el siguiente formato.
+`$ python Bblack refineryRefinery.py --gui`
+
+
+### instrucciones de uso
+ 
+ ```
+usage: VblackRefinery.py [-h] [-s SOURCE] [-o OUT] [--email] [--icloud]
+                         [--out-text-email] [--gui]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SOURCE, --source SOURCE
+                        archivo de entrada .csv
+  -o OUT, --out OUT     archivo de salida .db
+  --email               introduce si se va a revisar email
+  --icloud              introduce si se va a revisar icloud
+  --out-text-email      Crea salida de contraseñas validas email en .txt
+  --gui                 Abre el programa en modo GUI
+ ```
+ 
+ 
+- el archivo de entrada csv debe tener el siguiente formato
 
 debe ser el correo con la contraseña separada de una coma puede ser una o varias
  
@@ -16,16 +37,11 @@ debe ser el correo con la contraseña separada de una coma puede ser una o varia
  correo2@empresaMS.com,password54,12341231,admin
  ```
  
- - para correrlo se debe iniciar el archivo 
  
- `$ python fuerzaBrutaEmail.py -I [nombre_del_archivo.csv|txt] -O [nombre_de_archivo_salida] --email|--icloud` 
- - Existen las banderas --email que sirve solo para probar con smtp, si usas --icloud tambien probara suerte con los servidores de icloud
- 
-Va a dar como salida un archivo llamado claves.txt con los correos y contaseñas validas por los servidores de correo
 
 ### Caracteristicas del programa
-
-- Elimina los correos y contraseñas repetidas
+- ¡Interfaz grafica añadida!
 - Compatible con los servidores de correo microsoft, yahoo y google(gmail)
 - uso del protocolo imap y smtp(solo gmail)
 - guardar progreso para procesar listas extensas
+- pruebas con icloud
