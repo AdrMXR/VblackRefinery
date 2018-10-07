@@ -3,7 +3,7 @@ import sqlite3
 class Pumper:
     def __init__(self, database_file = "refinery.db",archivo_entrada = None):
         self.database_file = database_file
-        self.conn = sqlite3.connect(self.database_file)
+        self.conn = sqlite3.connect(self.database_file,check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.archivo_entrada = archivo_entrada
 

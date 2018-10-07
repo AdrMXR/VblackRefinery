@@ -5,7 +5,8 @@
 #
 
 import wx
-from tools.refinery import refinery
+import threading
+from tools.refinery import refinery as rf
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -16,11 +17,13 @@ from tools.refinery import refinery
 class Frame(wx.Frame):
 				def __init__(self, *args, **kwds):
 								# begin wxGlade: Frame.__init__
-								self.refinery = refinery()
+								self.archivo_entrada = None
+								self.database_file = './refinery'
 								self.salidaTxt = None
 								self.emailState = False
 								self.icloudState = False
 								self.txtState = False
+								self.hilos = 1
 								kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
 								wx.Frame.__init__(self, *args, **kwds)
 								self.SetSize((1000, 300))
@@ -28,6 +31,7 @@ class Frame(wx.Frame):
 								self.btnOutLista = wx.Button(self, wx.ID_ANY, "Archivo de salida")
 								self.chkBoxSalidaTXT = wx.CheckBox(self, wx.ID_ANY, "Habilitar salida TXT\n")
 								self.btnDB = wx.Button(self, wx.ID_ANY, "Seleccionar base de datos")
+								self.spnCtrl = wx.SpinCtrl(self, wx.ID_ANY, "1", min=1, max=1000)
 								self.chkEmail = wx.CheckBox(self, wx.ID_ANY, "Habilitar Email")
 								self.chkIcloud = wx.CheckBox(self, wx.ID_ANY, "Habilitar Icloud")
 								self.btnIniciar = wx.Button(self, wx.ID_ANY, "Iniciar")
@@ -39,6 +43,7 @@ class Frame(wx.Frame):
 								self.Bind(wx.EVT_BUTTON, self.seleccionarSalida, self.btnOutLista)
 								self.Bind(wx.EVT_CHECKBOX, self.habilitarSalidaTXT, self.chkBoxSalidaTXT)
 								self.Bind(wx.EVT_BUTTON, self.seleccionarDB, self.btnDB)
+								self.Bind(wx.EVT_SPINCTRL, self.asignarHilos, self.spnCtrl)
 								self.Bind(wx.EVT_CHECKBOX, self.habilitarEmail, self.chkEmail)
 								self.Bind(wx.EVT_CHECKBOX, self.habilitaIcloud, self.chkIcloud)
 								self.Bind(wx.EVT_BUTTON, self.inicar, self.btnIniciar)
@@ -53,6 +58,7 @@ class Frame(wx.Frame):
 				def __do_layout(self):
 								# begin wxGlade: Frame.__do_layout
 								griod = wx.GridSizer(7, 4, 0, 0)
+								grid_sizer_1 = wx.GridSizer(0, 2, 0, 0)
 								griod.Add((0, 0), 0, 0, 0)
 								griod.Add((0, 0), 0, 0, 0)
 								griod.Add((0, 0), 0, 0, 0)
@@ -70,7 +76,10 @@ class Frame(wx.Frame):
 								griod.Add(lblArchivoSalidaTxt, 0, wx.ALIGN_CENTER | wx.EXPAND, 0)
 								griod.Add(self.btnDB, 0, wx.ALIGN_CENTER | wx.EXPAND, 0)
 								griod.Add((0, 0), 0, 0, 0)
-								griod.Add((0, 0), 0, 0, 0)
+								lblHilos = wx.StaticText(self, wx.ID_ANY, "Hilos:", style=wx.ALIGN_CENTER)
+								grid_sizer_1.Add(lblHilos, 0, wx.EXPAND, 0)
+								grid_sizer_1.Add(self.spnCtrl, 0, wx.ALIGN_CENTER | wx.EXPAND, 0)
+								griod.Add(grid_sizer_1, 1, wx.EXPAND, 0)
 								griod.Add(self.chkEmail, 0, 0, 0)
 								lblDB = wx.StaticText(self, wx.ID_ANY, "")
 								griod.Add(lblDB, 0, wx.ALIGN_CENTER | wx.EXPAND, 0)
@@ -93,16 +102,15 @@ class Frame(wx.Frame):
 								with wx.FileDialog(self, "Seleccionar lista de entrada",style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 									if fileDialog.ShowModal() == wx.ID_CANCEL:
 										return
-									filename = fileDialog.GetFileName()
 									pathname = fileDialog.GetPath()
-									self.refinery.archivo_entrada = pathname
+									print(pathname)
+									self.archivo_entrada = pathname
 
 
 				def seleccionarSalida(self, event):  # wxGlade: Frame.<event_handler>
 								with wx.FileDialog(self, "Seleccionar archivo de salida",style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
 									if fileDialog.ShowModal() == wx.ID_CANCEL:
 										return
-									filename = fileDialog.GetFileName()
 									pathname = fileDialog.GetPath()
 									self.salidaTxt = pathname
 
@@ -113,27 +121,41 @@ class Frame(wx.Frame):
 								with wx.FileDialog(self, "Seleccionar archivo de base de datos",style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
 									if fileDialog.ShowModal() == wx.ID_CANCEL:
 										return
-									filename = fileDialog.GetFileName()
 									pathname = fileDialog.GetPath()
-									self.refinery.database_file = pathname
+									self.database_file = pathname
 
 				def habilitarEmail(self, event):  # wxGlade: Frame.<event_handler>
 								self.emailState = self.chkEmail.GetValue()
 
 				def habilitaIcloud(self, event):  # wxGlade: Frame.<event_handler>
 								self.icloudState = self.chkIcloud.GetValue()
+				
+				def asignarHilos(self, event):  # wxGlade: Frame.<event_handler>
+								self.hilos = self.spnCtrl.GetValue()
+								print(self.spnCtrl.GetValue())
 
 				def inicar(self, event):  # wxGlade: Frame.<event_handler>
-					self.refinery.archivo_entrada = self.archivo_entrada
-					self.refinery.pumper.extraer_datos()
+					print(self.hilos)
+					refinery = rf(database_file=self.database_file,archivo_entrada=self.archivo_entrada)
+					refinery.pumper.extraer_datos()
 					if self.txtState == True:
 						self.refinery.recuperar_email_validos()
 					if self.emailState == True:
-						self.refinery.checar_emails_login()
+						thread = threading.Thread(target=refinery.checar_emails_login,args=(self.hilos,))
+						thread.start()
+						while thread.is_alive():
+							with wx.MessageDialog(self, "El analisis email aun esta activo","Aviso") as dialog:
+								dialog.ShowModal()
+						thread.join()
 						with wx.MessageDialog(self, "El analisis emial a terminado","Aviso") as dialog:
 							dialog.ShowModal()
 					if self.icloudState == True:
-						self.refinery.checar_icloud_login()
+						thread = threading.Thread(target=refinery.checar_icloud_login,args=(self.hilos,))
+						thread.start()
+						while thread.is_alive():
+							with wx.MessageDialog(self, "El analisis icloud aun esta activo","Aviso") as dialog:
+								dialog.ShowModal()
+						thread.join()
 						with wx.MessageDialog(self, "El analisis icloud a terminado","Aviso") as dialog:
 							dialog.ShowModal()
 								
