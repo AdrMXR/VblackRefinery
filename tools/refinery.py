@@ -99,7 +99,4 @@ class refinery:
         self.pumper.conn.commit()
 
 
-if __name__ == "__main__":
-    refinery = refinery()
-    refinery.checar_emails_login()
     

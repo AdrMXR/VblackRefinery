@@ -57,8 +57,3 @@ class Pumper:
         checked = str(checked)
         checkedIcloud = str(checkedIcloud)
         self.cursor.execute("INSERT INTO login (id, email, password, icloud, logmail,checkedMail,checkedIcloud) VALUES ('"+email+contra+"','"+email+"','"+contra+"',"+icloud+","+logmail+","+checked+","+checkedIcloud+")")
-
-if __name__ == "__main__":
-    pump = Pumper(archivo_entrada="correosCandidatos2.txt")
-    pump.extraer_datos()
-    print(pump.select_datos_all())
